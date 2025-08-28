@@ -1,5 +1,8 @@
 package com.waveraven.moveout.calculator;
 
+import com.waveraven.moveout.calculator.entity.Bill;
+import com.waveraven.moveout.calculator.entity.CalculationResult;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

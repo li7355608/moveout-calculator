@@ -1,4 +1,4 @@
-package com.waveraven.moveout.calculator;
+package com.waveraven.moveout.calculator.entity;
 
 import java.math.BigDecimal;
 
