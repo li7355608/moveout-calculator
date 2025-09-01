@@ -64,11 +64,11 @@ public class BillingService {
         // 设置默认时间为当天0点0分
         bill.setCheckInDate(LocalDateTime.of(checkInYear, checkInMonth, checkInDay, 0, 0));
 
-        System.out.print("请输入入住时水表读数(正数表示余额，负数表示欠费): ");
+        System.out.print("请输入入住时水表金额(正数表示余额，负数表示欠费): ");
         bill.setWaterReadingIn(new BigDecimal(scanner.next()));
-        System.out.print("请输入入住时电表读数(正数表示余额，负数表示欠费): ");
+        System.out.print("请输入入住时电表金额(正数表示余额，负数表示欠费): ");
         bill.setElectricityReadingIn(new BigDecimal(scanner.next()));
-        System.out.print("请输入入住时燃气表读数(正数表示余额，负数表示欠费): ");
+        System.out.print("请输入入住时燃气表金额(正数表示余额，负数表示欠费): ");
         bill.setGasReadingIn(new BigDecimal(scanner.next()));
 
         // 输入退租信息
@@ -83,11 +83,11 @@ public class BillingService {
         // 设置默认时间为当天0点0分
         bill.setCheckOutDate(LocalDateTime.of(checkOutYear, checkOutMonth, checkOutDay, 0, 0));
 
-        System.out.print("请输入退租时水表读数(正数表示余额，负数表示欠费): ");
+        System.out.print("请输入退租时水表金额(正数表示余额，负数表示欠费): ");
         bill.setWaterReadingOut(new BigDecimal(scanner.next()));
-        System.out.print("请输入退租时电表读数(正数表示余额，负数表示欠费): ");
+        System.out.print("请输入退租时电表金额(正数表示余额，负数表示欠费): ");
         bill.setElectricityReadingOut(new BigDecimal(scanner.next()));
-        System.out.print("请输入退租时燃气表读数(正数表示余额，负数表示欠费): ");
+        System.out.print("请输入退租时燃气表金额(正数表示余额，负数表示欠费): ");
         bill.setGasReadingOut(new BigDecimal(scanner.next()));
 
         // 输入付费模式
@@ -137,21 +137,27 @@ public class BillingService {
         System.out.printf("  燃气表: %s 元 (%s)\n", bill.getGasReadingOut(),
                 bill.getGasReadingOut().compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
 
-        System.out.println("\n使用量明细：");
-        System.out.printf("  水使用量: %s (%s)\n", result.getWaterConsumption().abs(),
-                result.getWaterConsumption().compareTo(BigDecimal.ZERO) >= 0 ? "充值量" : "实际消耗");
-        System.out.printf("  电使用量: %s (%s)\n", result.getElectricityConsumption().abs(),
-                result.getElectricityConsumption().compareTo(BigDecimal.ZERO) >= 0 ? "充值量" : "实际消耗");
-        System.out.printf("  燃气使用量: %s (%s)\n", result.getGasConsumption().abs(),
-                result.getGasConsumption().compareTo(BigDecimal.ZERO) >= 0 ? "充值量" : "实际消耗");
+        System.out.println("\n账户变动明细：");
+        BigDecimal waterChange = bill.getWaterReadingOut().subtract(bill.getWaterReadingIn());
+        BigDecimal electricityChange = bill.getElectricityReadingOut().subtract(bill.getElectricityReadingIn());
+        BigDecimal gasChange = bill.getGasReadingOut().subtract(bill.getGasReadingIn());
+
+        System.out.printf("  水费变动: %s 元 (%s)\n", waterChange,
+                waterChange.compareTo(BigDecimal.ZERO) >= 0 ? "充值/余额增加" : "消费/余额减少");
+        System.out.printf("  电费变动: %s 元 (%s)\n", electricityChange,
+                electricityChange.compareTo(BigDecimal.ZERO) >= 0 ? "充值/余额增加" : "消费/余额减少");
+        System.out.printf("  燃气费变动: %s 元 (%s)\n", gasChange,
+                gasChange.compareTo(BigDecimal.ZERO) >= 0 ? "充值/余额增加" : "消费/余额减少");
+
+        System.out.println("\n实际使用量明细：");
+        System.out.printf("  水使用量: %s 吨/立方米\n", result.getWaterConsumption());
+        System.out.printf("  电使用量: %s 度\n", result.getElectricityConsumption());
+        System.out.printf("  燃气使用量: %s 立方米\n", result.getGasConsumption());
 
         System.out.println("\n费用明细：");
-        System.out.printf("  水费: %s 元，费用: %s 元\n",
-                result.getWaterConsumption().abs(), result.getWaterCost());
-        System.out.printf("  电费: %s 元，费用: %s 元\n",
-                result.getElectricityConsumption().abs(), result.getElectricityCost());
-        System.out.printf("  燃气费: %s 元，费用: %s 元\n",
-                result.getGasConsumption().abs(), result.getGasCost());
+        System.out.printf("  水费: %s 元\n", result.getWaterCost());
+        System.out.printf("  电费: %s 元\n", result.getElectricityCost());
+        System.out.printf("  燃气费: %s 元\n", result.getGasCost());
         System.out.println("------------------------");
         System.out.printf("总计应付费用: %s 元\n", result.getTotalCost());
 

@@ -27,36 +27,51 @@ public class MoveOutCalculatorService {
      * @return 计算结果
      */
     public CalculationResult calculate(Bill bill) {
-        // 计算实际消耗量
-        // 公式：消耗量 = 退租读数 - 入住读数
-        // 解释：
-        // 1. 如果入住为正数(余额)，退租为负数(欠费)：
-        //    消耗量 = 负数 - 正数 = 更大的负数，表示消耗了更多
-        // 2. 如果入住为负数(欠费)，退租为正数(余额)：
-        //    消耗量 = 正数 - 负数 = 更大的正数，表示充值了更多
-        BigDecimal waterConsumption = bill.getWaterReadingOut()
+        // 计算消耗金额（退租读数 - 入住读数）
+        // 正数表示充值/余额增加，负数表示消耗/余额减少
+        BigDecimal waterAmountConsumed = bill.getWaterReadingOut()
                 .subtract(bill.getWaterReadingIn());
 
-        BigDecimal electricityConsumption = bill.getElectricityReadingOut()
+        BigDecimal electricityAmountConsumed = bill.getElectricityReadingOut()
                 .subtract(bill.getElectricityReadingIn());
 
-        BigDecimal gasConsumption = bill.getGasReadingOut()
+        BigDecimal gasAmountConsumed = bill.getGasReadingOut()
                 .subtract(bill.getGasReadingIn());
 
-        // 计算各项费用（保留2位小数）
-        // 注意：消耗量为正表示用户充值/余额增加，为负表示实际消耗
-        // 费用始终为正数，表示用户需要支付的金额
-        BigDecimal waterCost = waterConsumption.multiply(waterRate)
-                .abs() // 取绝对值确保费用为正数
-                .setScale(2, RoundingMode.HALF_UP);
+        // 计算实际使用量（只有当消耗金额为负数时才表示实际使用）
+        // 如果消耗金额为正，表示充值，使用量为0
+        BigDecimal waterUsage = BigDecimal.ZERO;
+        BigDecimal electricityUsage = BigDecimal.ZERO;
+        BigDecimal gasUsage = BigDecimal.ZERO;
 
-        BigDecimal electricityCost = electricityConsumption.multiply(electricityRate)
-                .abs() // 取绝对值确保费用为正数
-                .setScale(2, RoundingMode.HALF_UP);
+        if (waterAmountConsumed.compareTo(BigDecimal.ZERO) < 0) {
+            waterUsage = waterAmountConsumed.abs().divide(waterRate, 2, RoundingMode.HALF_UP);
+        }
 
-        BigDecimal gasCost = gasConsumption.multiply(gasRate)
-                .abs() // 取绝对值确保费用为正数
-                .setScale(2, RoundingMode.HALF_UP);
+        if (electricityAmountConsumed.compareTo(BigDecimal.ZERO) < 0) {
+            electricityUsage = electricityAmountConsumed.abs().divide(electricityRate, 2, RoundingMode.HALF_UP);
+        }
+
+        if (gasAmountConsumed.compareTo(BigDecimal.ZERO) < 0) {
+            gasUsage = gasAmountConsumed.abs().divide(gasRate, 2, RoundingMode.HALF_UP);
+        }
+
+        // 计算各项费用（只有消耗才需要付费，充值不收费）
+        BigDecimal waterCost = BigDecimal.ZERO;
+        BigDecimal electricityCost = BigDecimal.ZERO;
+        BigDecimal gasCost = BigDecimal.ZERO;
+
+        if (waterAmountConsumed.compareTo(BigDecimal.ZERO) < 0) {
+            waterCost = waterAmountConsumed.abs().setScale(2, RoundingMode.HALF_UP);
+        }
+
+        if (electricityAmountConsumed.compareTo(BigDecimal.ZERO) < 0) {
+            electricityCost = electricityAmountConsumed.abs().setScale(2, RoundingMode.HALF_UP);
+        }
+
+        if (gasAmountConsumed.compareTo(BigDecimal.ZERO) < 0) {
+            gasCost = gasAmountConsumed.abs().setScale(2, RoundingMode.HALF_UP);
+        }
 
         // 计算总费用
         BigDecimal totalCost = waterCost.add(electricityCost).add(gasCost)
@@ -72,7 +87,7 @@ public class MoveOutCalculatorService {
             refundAmount = prepaidAmount.subtract(totalCost);
         }
 
-        return new CalculationResult(waterConsumption, electricityConsumption, gasConsumption,
+        return new CalculationResult(waterUsage, electricityUsage, gasUsage,
                 waterCost, electricityCost, gasCost, totalCost, prepaidAmount,
                 refundAmount, paymentMode);
     }
