@@ -5,6 +5,7 @@ import com.waveraven.moveout.calculator.entity.CalculationResult;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 账单服务类，处理退租费用计算的业务逻辑
@@ -76,9 +77,12 @@ public class BillingService {
      * 显示计算结果
      */
     private void displayResult(Bill bill, CalculationResult result) {
+        // 创建日期时间格式化器
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
+
         System.out.println("=== 退租费用结算单 ===");
-        System.out.printf("入住时间: %s\n", bill.getCheckInDate());
-        System.out.printf("退租时间: %s\n", bill.getCheckOutDate());
+        System.out.printf("入住时间: %s\n", bill.getCheckInDate().format(formatter));
+        System.out.printf("退租时间: %s\n", bill.getCheckOutDate().format(formatter));
         System.out.printf("付费模式: %s\n", "prepaid".equals(result.getPaymentMode()) ? "预付款模式" : "后付费模式");
         System.out.println("------------------------");
 
