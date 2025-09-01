@@ -13,11 +13,11 @@ import java.util.Scanner;
  */
 public class BillingService {
 
-    private static final String WATER_CALCULATOR = "3.50";
+    private static final String WATER_CALCULATOR = "3.1";
 
-    private static final String ELECTRICITY_CALCULATOR = "1.20";
+    private static final String ELECTRICITY_CALCULATOR = "0.56";
 
-    private static final String GAS_CALCULATOR = "2.80";
+    private static final String GAS_CALCULATOR = "2.94";
 
     /**
      * 运行费用计算流程
