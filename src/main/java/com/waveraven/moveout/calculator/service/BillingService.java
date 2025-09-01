@@ -150,7 +150,7 @@ public class BillingService {
         System.out.printf("  电费充值: %s 元\n", ConsoleColors.BLUE + bill.getElectricityRecharge().toString() + ConsoleColors.RESET);
         System.out.printf("  燃气费充值: %s 元\n", ConsoleColors.BLUE + bill.getGasRecharge().toString() + ConsoleColors.RESET);
         System.out.printf("  充值总计: %s 元\n",
-                ConsoleColors.BLUE_BOLD + bill.getWaterRecharge().add(bill.getElectricityRecharge()).add(bill.getGasRecharge()).toString() + ConsoleColors.RESET);
+                ConsoleColors.BLUE_BOLD + bill.getWaterRecharge().add(bill.getElectricityRecharge()).add(bill.getGasRecharge()) + ConsoleColors.RESET);
 
         System.out.println("\n" + ConsoleColors.YELLOW + "住户退租时状态：" + ConsoleColors.RESET);
         System.out.printf("  水表: %s 元 (%s)\n",
