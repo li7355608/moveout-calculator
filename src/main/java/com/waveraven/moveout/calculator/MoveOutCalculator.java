@@ -52,7 +52,18 @@ public class MoveOutCalculator {
         BigDecimal totalCost = waterCost.add(electricityCost).add(gasCost)
                 .setScale(2, RoundingMode.HALF_UP);
 
+        BigDecimal refundAmount = BigDecimal.ZERO;
+        BigDecimal prepaidAmount = BigDecimal.ZERO;
+        String paymentMode = bill.getPaymentMode();
+
+        // 如果是预付款模式，计算退款金额
+        if ("prepaid".equals(paymentMode)) {
+            prepaidAmount = bill.getPrepaidAmount();
+            refundAmount = prepaidAmount.subtract(totalCost);
+        }
+
         return new CalculationResult(waterConsumption, electricityConsumption, gasConsumption,
-                waterCost, electricityCost, gasCost, totalCost);
+                waterCost, electricityCost, gasCost, totalCost, prepaidAmount,
+                refundAmount, paymentMode);
     }
 }

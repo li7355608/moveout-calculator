@@ -60,23 +60,39 @@ public class BillingService {
         System.out.println("=== 退租费用结算单 ===");
         System.out.printf("入住时间: %s\n", bill.getCheckInDate());
         System.out.printf("退租时间: %s\n", bill.getCheckOutDate());
+        System.out.printf("付费模式: %s\n", "prepaid".equals(result.getPaymentMode()) ? "预付款模式" : "后付费模式");
         System.out.println("------------------------");
+
         System.out.println("入住时状态：");
         System.out.printf("  水费: %s 元 (负数为欠费)\n", bill.getWaterReadingIn());
         System.out.printf("  电费: %s 元 (负数为欠费)\n", bill.getElectricityReadingIn());
         System.out.printf("  燃气费: %s 元 (负数为欠费)\n", bill.getGasReadingIn());
+
         System.out.println("\n退租时读数：");
         System.out.printf("  水表: %s 元\n", bill.getWaterReadingOut());
         System.out.printf("  电表: %s 元\n", bill.getElectricityReadingOut());
         System.out.printf("  燃气表: %s 元\n", bill.getGasReadingOut());
+
         System.out.println("\n费用明细：");
         System.out.printf("  水费消耗: %s 元，费用: %s 元\n",
-                         result.getWaterConsumption(), result.getWaterCost());
+                result.getWaterConsumption(), result.getWaterCost());
         System.out.printf("  电费消耗: %s 元，费用: %s 元\n",
-                         result.getElectricityConsumption(), result.getElectricityCost());
+                result.getElectricityConsumption(), result.getElectricityCost());
         System.out.printf("  燃气费消耗: %s 元，费用: %s 元\n",
-                         result.getGasConsumption(), result.getGasCost());
+                result.getGasConsumption(), result.getGasCost());
         System.out.println("------------------------");
         System.out.printf("总计应付费用: %s 元\n", result.getTotalCost());
+
+        // 如果是预付款模式，显示预付款和退款信息
+        if ("prepaid".equals(result.getPaymentMode())) {
+            System.out.printf("预付款金额: %s 元\n", result.getPrepaidAmount());
+            if (result.getRefundAmount().compareTo(BigDecimal.ZERO) > 0) {
+                System.out.printf("应退款给用户: %s 元\n", result.getRefundAmount());
+            } else if (result.getRefundAmount().compareTo(BigDecimal.ZERO) < 0) {
+                System.out.printf("用户需补缴: %s 元\n", result.getRefundAmount().abs());
+            } else {
+                System.out.println("预付款与实际费用一致，无需退款或补缴");
+            }
+        }
     }
 }

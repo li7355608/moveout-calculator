@@ -20,6 +20,11 @@ public class Bill {
     // 退租时燃气表读数
     private BigDecimal gasReadingOut;
 
+    // 预付款金额
+    private BigDecimal prepaidAmount;
+    // 付费模式 (prepaid or postpaid)
+    private String paymentMode;
+
     // 构造函数、getter和setter方法
     public Bill() {}
 
@@ -85,5 +90,21 @@ public class Bill {
 
     public void setGasReadingOut(BigDecimal gasReadingOut) {
         this.gasReadingOut = gasReadingOut;
+    }
+
+    public BigDecimal getPrepaidAmount() {
+        return prepaidAmount;
+    }
+
+    public void setPrepaidAmount(BigDecimal prepaidAmount) {
+        this.prepaidAmount = prepaidAmount;
+    }
+
+    public String getPaymentMode() {
+        return paymentMode;
+    }
+
+    public void setPaymentMode(String paymentMode) {
+        this.paymentMode = paymentMode;
     }
 }
