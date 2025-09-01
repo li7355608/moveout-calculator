@@ -10,9 +10,12 @@ import java.math.RoundingMode;
  * 退租费用计算器
  */
 public class MoveOutCalculatorService {
-    private final BigDecimal waterRate;       // 水费单价
-    private final BigDecimal electricityRate; // 电费单价
-    private final BigDecimal gasRate;         // 燃气费单价
+    // 水费单价
+    private final BigDecimal waterRate;
+    // 电费单价
+    private final BigDecimal electricityRate;
+    // 燃气费单价
+    private final BigDecimal gasRate;
 
     public MoveOutCalculatorService(BigDecimal waterRate, BigDecimal electricityRate, BigDecimal gasRate) {
         this.waterRate = waterRate;

@@ -27,8 +27,4 @@ public class Bill {
     private BigDecimal waterRecharge;
     private BigDecimal electricityRecharge;
     private BigDecimal gasRecharge;
-
-    // 构造函数、getter和setter方法
-    public Bill() {}
-
 }

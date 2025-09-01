@@ -16,10 +16,8 @@ public class BillingService {
 
     // 默认阶梯水费单价
     private static final String WATER_CALCULATOR = "3.1";
-
     // 默认阶梯电费单价
     private static final String ELECTRICITY_CALCULATOR = "0.56";
-
     // 默认阶梯燃气费单价
     private static final String GAS_CALCULATOR = "2.94";
 
