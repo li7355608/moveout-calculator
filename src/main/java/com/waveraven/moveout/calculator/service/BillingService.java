@@ -6,6 +6,7 @@ import com.waveraven.moveout.calculator.entity.CalculationResult;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
 
 /**
  * 账单服务类，处理退租费用计算的业务逻辑
@@ -22,8 +23,8 @@ public class BillingService {
      * 运行费用计算流程
      */
     public void runCalculation() {
-        // 创建示例账单
-        Bill bill = createSampleBill();
+        // 创建账单（通过用户输入）
+        Bill bill = createBillFromInput();
 
         // 创建计算器并计算费用
         MoveOutCalculatorService calculator = new MoveOutCalculatorService(
@@ -43,32 +44,64 @@ public class BillingService {
     }
 
     /**
-     * 创建示例账单
+     * 通过用户输入创建账单
      */
-    private Bill createSampleBill() {
+    private Bill createBillFromInput() {
         Bill bill = new Bill();
+        Scanner scanner = new Scanner(System.in);
 
-        // 设置入住信息
-        bill.setCheckInDate(LocalDateTime.of(2023, 1, 1, 14, 0));
-        // 入住时欠水费25.50元
-        bill.setWaterReadingIn(new BigDecimal("-25.50"));
-        // 入住时水电余额50元
-        bill.setElectricityReadingIn(new BigDecimal("50.00"));
-        // 入住时欠燃气费10元
-        bill.setGasReadingIn(new BigDecimal("-10.00"));
+        System.out.println("=== 请输入账单信息 ===");
 
-        // 设置退租信息
-        bill.setCheckOutDate(LocalDateTime.of(2023, 12, 31, 10, 0));
-        // 退租时水表读数
-        bill.setWaterReadingOut(new BigDecimal("150.00"));
-        // 退租时电表读数
-        bill.setElectricityReadingOut(new BigDecimal("80.00"));
-        // 退租时燃气表读数
-        bill.setGasReadingOut(new BigDecimal("200.00"));
+        // 输入入住信息
+        System.out.println("入住信息：");
+        System.out.print("请输入入住年份: ");
+        int checkInYear = scanner.nextInt();
+        System.out.print("请输入入住月份: ");
+        int checkInMonth = scanner.nextInt();
+        System.out.print("请输入入住日期: ");
+        int checkInDay = scanner.nextInt();
 
-        // 设置付费模式
-        // 默认后付费模式
-        bill.setPaymentMode("postpaid");
+        // 设置默认时间为当天0点0分
+        bill.setCheckInDate(LocalDateTime.of(checkInYear, checkInMonth, checkInDay, 0, 0));
+
+        System.out.print("请输入入住时水表读数(正数表示余额，负数表示欠费): ");
+        bill.setWaterReadingIn(new BigDecimal(scanner.next()));
+        System.out.print("请输入入住时电表读数(正数表示余额，负数表示欠费): ");
+        bill.setElectricityReadingIn(new BigDecimal(scanner.next()));
+        System.out.print("请输入入住时燃气表读数(正数表示余额，负数表示欠费): ");
+        bill.setGasReadingIn(new BigDecimal(scanner.next()));
+
+        // 输入退租信息
+        System.out.println("\n退租信息：");
+        System.out.print("请输入退租年份: ");
+        int checkOutYear = scanner.nextInt();
+        System.out.print("请输入退租月份: ");
+        int checkOutMonth = scanner.nextInt();
+        System.out.print("请输入退租日期: ");
+        int checkOutDay = scanner.nextInt();
+
+        // 设置默认时间为当天0点0分
+        bill.setCheckOutDate(LocalDateTime.of(checkOutYear, checkOutMonth, checkOutDay, 0, 0));
+
+        System.out.print("请输入退租时水表读数(正数表示余额，负数表示欠费): ");
+        bill.setWaterReadingOut(new BigDecimal(scanner.next()));
+        System.out.print("请输入退租时电表读数(正数表示余额，负数表示欠费): ");
+        bill.setElectricityReadingOut(new BigDecimal(scanner.next()));
+        System.out.print("请输入退租时燃气表读数(正数表示余额，负数表示欠费): ");
+        bill.setGasReadingOut(new BigDecimal(scanner.next()));
+
+        // 输入付费模式
+        System.out.println("\n付费模式：");
+        System.out.print("请选择付费模式 (1: 预付款模式, 2: 后付费模式) [输入1或2]: ");
+        int paymentModeChoice = scanner.nextInt();
+        if (paymentModeChoice == 1) {
+            bill.setPaymentMode("prepaid");
+            System.out.print("请输入预付款金额: ");
+            bill.setPrepaidAmount(new BigDecimal(scanner.next()));
+        } else {
+            bill.setPaymentMode("postpaid");
+            bill.setPrepaidAmount(BigDecimal.ZERO);
+        }
 
         return bill;
     }
@@ -77,37 +110,48 @@ public class BillingService {
      * 显示计算结果
      */
     private void displayResult(Bill bill, CalculationResult result) {
-        // 创建日期时间格式化器
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
+        // 创建日期时间格式化器（只显示年月日）
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
 
-        System.out.println("=== 退租费用结算单 ===");
+        System.out.println("\n=== 退租费用结算单 ===");
         System.out.printf("入住时间: %s\n", bill.getCheckInDate().format(formatter));
         System.out.printf("退租时间: %s\n", bill.getCheckOutDate().format(formatter));
+        System.out.printf("居住天数: %d 天\n",
+            java.time.temporal.ChronoUnit.DAYS.between(bill.getCheckInDate(), bill.getCheckOutDate()));
         System.out.printf("付费模式: %s\n", "prepaid".equals(result.getPaymentMode()) ? "预付款模式" : "后付费模式");
         System.out.println("------------------------");
 
         System.out.println("入住时状态：");
-        System.out.printf("  水费: %s 元 (负数为欠费)\n", bill.getWaterReadingIn());
-        System.out.printf("  电费: %s 元 (负数为欠费)\n", bill.getElectricityReadingIn());
-        System.out.printf("  燃气费: %s 元 (负数为欠费)\n", bill.getGasReadingIn());
+        System.out.printf("  水费: %s 元 (%s)\n", bill.getWaterReadingIn(),
+                bill.getWaterReadingIn().compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
+        System.out.printf("  电费: %s 元 (%s)\n", bill.getElectricityReadingIn(),
+                bill.getElectricityReadingIn().compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
+        System.out.printf("  燃气费: %s 元 (%s)\n", bill.getGasReadingIn(),
+                bill.getGasReadingIn().compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
 
-        System.out.println("\n退租时读数：");
-        System.out.printf("  水表: %s 元\n", bill.getWaterReadingOut());
-        System.out.printf("  电表: %s 元\n", bill.getElectricityReadingOut());
-        System.out.printf("  燃气表: %s 元\n", bill.getGasReadingOut());
+        System.out.println("\n退租时状态：");
+        System.out.printf("  水表: %s 元 (%s)\n", bill.getWaterReadingOut(),
+                bill.getWaterReadingOut().compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
+        System.out.printf("  电表: %s 元 (%s)\n", bill.getElectricityReadingOut(),
+                bill.getElectricityReadingOut().compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
+        System.out.printf("  燃气表: %s 元 (%s)\n", bill.getGasReadingOut(),
+                bill.getGasReadingOut().compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
 
         System.out.println("\n使用量明细：");
-        System.out.printf("  水使用量: %s\n", result.getWaterConsumption());
-        System.out.printf("  电使用量: %s\n", result.getElectricityConsumption());
-        System.out.printf("  燃气使用量: %s\n", result.getGasConsumption());
+        System.out.printf("  水使用量: %s (%s)\n", result.getWaterConsumption().abs(),
+                result.getWaterConsumption().compareTo(BigDecimal.ZERO) >= 0 ? "充值量" : "实际消耗");
+        System.out.printf("  电使用量: %s (%s)\n", result.getElectricityConsumption().abs(),
+                result.getElectricityConsumption().compareTo(BigDecimal.ZERO) >= 0 ? "充值量" : "实际消耗");
+        System.out.printf("  燃气使用量: %s (%s)\n", result.getGasConsumption().abs(),
+                result.getGasConsumption().compareTo(BigDecimal.ZERO) >= 0 ? "充值量" : "实际消耗");
 
         System.out.println("\n费用明细：");
-        System.out.printf("  水费消耗: %s 元，费用: %s 元\n",
-                result.getWaterConsumption(), result.getWaterCost());
-        System.out.printf("  电费消耗: %s 元，费用: %s 元\n",
-                result.getElectricityConsumption(), result.getElectricityCost());
-        System.out.printf("  燃气费消耗: %s 元，费用: %s 元\n",
-                result.getGasConsumption(), result.getGasCost());
+        System.out.printf("  水费: %s 元，费用: %s 元\n",
+                result.getWaterConsumption().abs(), result.getWaterCost());
+        System.out.printf("  电费: %s 元，费用: %s 元\n",
+                result.getElectricityConsumption().abs(), result.getElectricityCost());
+        System.out.printf("  燃气费: %s 元，费用: %s 元\n",
+                result.getGasConsumption().abs(), result.getGasCost());
         System.out.println("------------------------");
         System.out.printf("总计应付费用: %s 元\n", result.getTotalCost());
 

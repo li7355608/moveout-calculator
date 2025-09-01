@@ -27,8 +27,13 @@ public class MoveOutCalculatorService {
      * @return 计算结果
      */
     public CalculationResult calculate(Bill bill) {
-        // 计算实际消耗量（退租读数 - 入住读数）
-        // 入住读数为负表示欠费，为正表示余额
+        // 计算实际消耗量
+        // 公式：消耗量 = 退租读数 - 入住读数
+        // 解释：
+        // 1. 如果入住为正数(余额)，退租为负数(欠费)：
+        //    消耗量 = 负数 - 正数 = 更大的负数，表示消耗了更多
+        // 2. 如果入住为负数(欠费)，退租为正数(余额)：
+        //    消耗量 = 正数 - 负数 = 更大的正数，表示充值了更多
         BigDecimal waterConsumption = bill.getWaterReadingOut()
                 .subtract(bill.getWaterReadingIn());
 
@@ -39,13 +44,18 @@ public class MoveOutCalculatorService {
                 .subtract(bill.getGasReadingIn());
 
         // 计算各项费用（保留2位小数）
+        // 注意：消耗量为正表示用户充值/余额增加，为负表示实际消耗
+        // 费用始终为正数，表示用户需要支付的金额
         BigDecimal waterCost = waterConsumption.multiply(waterRate)
+                .abs() // 取绝对值确保费用为正数
                 .setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal electricityCost = electricityConsumption.multiply(electricityRate)
+                .abs() // 取绝对值确保费用为正数
                 .setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal gasCost = gasConsumption.multiply(gasRate)
+                .abs() // 取绝对值确保费用为正数
                 .setScale(2, RoundingMode.HALF_UP);
 
         // 计算总费用
