@@ -14,10 +14,13 @@ import java.util.Scanner;
  */
 public class BillingService {
 
+    // 默认阶梯水费单价
     private static final String WATER_CALCULATOR = "3.1";
 
+    // 默认阶梯电费单价
     private static final String ELECTRICITY_CALCULATOR = "0.56";
 
+    // 默认阶梯燃气费单价
     private static final String GAS_CALCULATOR = "2.94";
 
     /**
@@ -54,7 +57,7 @@ public class BillingService {
         System.out.println(ConsoleColors.CYAN_BOLD + "=== 请输入账单信息 ===" + ConsoleColors.RESET);
 
         // 输入入住信息
-        System.out.println(ConsoleColors.YELLOW + "入住信息：" + ConsoleColors.RESET);
+        System.out.println(ConsoleColors.YELLOW + "住户入住信息：" + ConsoleColors.RESET);
         System.out.print("请输入入住年份: ");
         int checkInYear = scanner.nextInt();
         System.out.print("请输入入住月份: ");
@@ -73,7 +76,7 @@ public class BillingService {
         bill.setGasReadingIn(new BigDecimal(scanner.next()));
 
         // 输入充值信息
-        System.out.println("\n" + ConsoleColors.YELLOW + "充值信息：" + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.YELLOW + "住户总充值信息：" + ConsoleColors.RESET);
         System.out.print("请输入水费充值金额: ");
         bill.setWaterRecharge(new BigDecimal(scanner.next()));
         System.out.print("请输入电费充值金额: ");
@@ -82,7 +85,7 @@ public class BillingService {
         bill.setGasRecharge(new BigDecimal(scanner.next()));
 
         // 输入退租信息
-        System.out.println("\n" + ConsoleColors.YELLOW + "退租信息：" + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.YELLOW + "住户退租信息：" + ConsoleColors.RESET);
         System.out.print("请输入退租年份: ");
         int checkOutYear = scanner.nextInt();
         System.out.print("请输入退租月份: ");
@@ -110,14 +113,14 @@ public class BillingService {
         // 创建日期时间格式化器（只显示年月日）
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
 
-        System.out.println("\n" + ConsoleColors.GREEN_BOLD + "=== 退租费用结算单 ===" + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.GREEN_BOLD + "=== 水电煤退租费用结算单 ===" + ConsoleColors.RESET);
         System.out.printf(ConsoleColors.CYAN + "入住时间: " + ConsoleColors.RESET + "%s\n", bill.getCheckInDate().format(formatter));
         System.out.printf(ConsoleColors.CYAN + "退租时间: " + ConsoleColors.RESET + "%s\n", bill.getCheckOutDate().format(formatter));
         System.out.printf(ConsoleColors.CYAN + "居住天数: " + ConsoleColors.RESET + "%d 天\n",
             java.time.temporal.ChronoUnit.DAYS.between(bill.getCheckInDate(), bill.getCheckOutDate()));
         System.out.println(ConsoleColors.PURPLE + "------------------------" + ConsoleColors.RESET);
 
-        System.out.println(ConsoleColors.YELLOW + "入住时状态：" + ConsoleColors.RESET);
+        System.out.println(ConsoleColors.YELLOW + "住户入住时状态：" + ConsoleColors.RESET);
         System.out.printf("  水费: %s 元 (%s)\n",
             bill.getWaterReadingIn().compareTo(BigDecimal.ZERO) >= 0 ?
                 ConsoleColors.GREEN + bill.getWaterReadingIn() + ConsoleColors.RESET :
@@ -142,14 +145,14 @@ public class BillingService {
                 ConsoleColors.GREEN + "余额" + ConsoleColors.RESET :
                 ConsoleColors.RED + "欠费" + ConsoleColors.RESET);
 
-        System.out.println("\n" + ConsoleColors.YELLOW + "充值金额：" + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.YELLOW + "住户充值金额：" + ConsoleColors.RESET);
         System.out.printf("  水费充值: %s 元\n", ConsoleColors.BLUE + bill.getWaterRecharge().toString() + ConsoleColors.RESET);
         System.out.printf("  电费充值: %s 元\n", ConsoleColors.BLUE + bill.getElectricityRecharge().toString() + ConsoleColors.RESET);
         System.out.printf("  燃气费充值: %s 元\n", ConsoleColors.BLUE + bill.getGasRecharge().toString() + ConsoleColors.RESET);
         System.out.printf("  充值总计: %s 元\n",
                 ConsoleColors.BLUE_BOLD + bill.getWaterRecharge().add(bill.getElectricityRecharge()).add(bill.getGasRecharge()).toString() + ConsoleColors.RESET);
 
-        System.out.println("\n" + ConsoleColors.YELLOW + "退租时状态：" + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.YELLOW + "住户退租时状态：" + ConsoleColors.RESET);
         System.out.printf("  水表: %s 元 (%s)\n",
             bill.getWaterReadingOut().compareTo(BigDecimal.ZERO) >= 0 ?
                 ConsoleColors.GREEN + bill.getWaterReadingOut() + ConsoleColors.RESET :
@@ -179,7 +182,7 @@ public class BillingService {
         BigDecimal electricityTheoretical = bill.getElectricityReadingIn().add(bill.getElectricityRecharge());
         BigDecimal gasTheoretical = bill.getGasReadingIn().add(bill.getGasRecharge());
 
-        System.out.println("\n" + ConsoleColors.YELLOW + "理论余额（入住余额+充值）：" + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.YELLOW + "理论余额（入住时抄表余额 + 住户充值金额）：" + ConsoleColors.RESET);
         System.out.printf("  水费理论余额: %s 元 (%s)\n",
             waterTheoretical.compareTo(BigDecimal.ZERO) >= 0 ?
                 ConsoleColors.GREEN + waterTheoretical + ConsoleColors.RESET :
@@ -204,7 +207,7 @@ public class BillingService {
                 ConsoleColors.GREEN + "余额" + ConsoleColors.RESET :
                 ConsoleColors.RED + "欠费" + ConsoleColors.RESET);
 
-        System.out.println("\n" + ConsoleColors.YELLOW + "实际消耗明细：" + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.YELLOW + "住户实际消耗金额明细：" + ConsoleColors.RESET);
         BigDecimal waterConsumed = waterTheoretical.subtract(bill.getWaterReadingOut());
         BigDecimal electricityConsumed = electricityTheoretical.subtract(bill.getElectricityReadingOut());
         BigDecimal gasConsumed = gasTheoretical.subtract(bill.getGasReadingOut());
@@ -227,7 +230,7 @@ public class BillingService {
                 ConsoleColors.RED + "需要支付" + ConsoleColors.RESET :
                 ConsoleColors.GREEN + "有余额" + ConsoleColors.RESET);
 
-        System.out.println("\n" + ConsoleColors.YELLOW + "实际使用量明细：" + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.YELLOW + "住户实际使用量明细：" + ConsoleColors.RESET);
         System.out.printf("  水使用量: %s 吨/立方米\n", ConsoleColors.CYAN + result.getWaterConsumption().toString() + ConsoleColors.RESET);
         System.out.printf("  电使用量: %s 度\n", ConsoleColors.CYAN + result.getElectricityConsumption().toString() + ConsoleColors.RESET);
         System.out.printf("  燃气使用量: %s 立方米\n", ConsoleColors.CYAN + result.getGasConsumption().toString() + ConsoleColors.RESET);
@@ -245,11 +248,11 @@ public class BillingService {
         // 正数表示充值多了，需要退款给用户
         // 负数表示充值少了，用户还需要补缴
         if (result.getRefundAmount().compareTo(BigDecimal.ZERO) > 0) {
-            System.out.printf(ConsoleColors.GREEN_BOLD + "应退款给用户: %s 元\n" + ConsoleColors.RESET, result.getRefundAmount());
+            System.out.printf(ConsoleColors.GREEN_BOLD + "房东应退款给用户: %s 元\n" + ConsoleColors.RESET, result.getRefundAmount());
         } else if (result.getRefundAmount().compareTo(BigDecimal.ZERO) < 0) {
-            System.out.printf(ConsoleColors.RED_BOLD + "用户还需补缴: %s 元\n" + ConsoleColors.RESET, result.getRefundAmount().abs());
+            System.out.printf(ConsoleColors.RED_BOLD + "住户还需补缴房东: %s 元\n" + ConsoleColors.RESET, result.getRefundAmount().abs());
         } else {
-            System.out.println(ConsoleColors.YELLOW + "充值金额与实际费用一致，无需退款或补缴" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.YELLOW + "充值金额与实际费用一致，住户或房东均无需退款或补缴" + ConsoleColors.RESET);
         }
     }
 }
