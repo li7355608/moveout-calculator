@@ -1,10 +1,15 @@
 package com.waveraven.moveout.calculator.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 
 /**
  * 计算结果类
  */
+@Data
 public class CalculationResult {
     // 水消耗量
     private final BigDecimal waterConsumption;
@@ -45,46 +50,5 @@ public class CalculationResult {
         this.prepaidAmount = prepaidAmount;
         this.refundAmount = refundAmount;
         this.paymentMode = paymentMode;
-    }
-
-    // Getters
-    public BigDecimal getWaterConsumption() {
-        return waterConsumption;
-    }
-
-    public BigDecimal getElectricityConsumption() {
-        return electricityConsumption;
-    }
-
-    public BigDecimal getGasConsumption() {
-        return gasConsumption;
-    }
-
-    public BigDecimal getWaterCost() {
-        return waterCost;
-    }
-
-    public BigDecimal getElectricityCost() {
-        return electricityCost;
-    }
-
-    public BigDecimal getGasCost() {
-        return gasCost;
-    }
-
-    public BigDecimal getTotalCost() {
-        return totalCost;
-    }
-
-    public BigDecimal getPrepaidAmount() {
-        return prepaidAmount;
-    }
-
-    public BigDecimal getRefundAmount() {
-        return refundAmount;
-    }
-
-    public String getPaymentMode() {
-        return paymentMode;
     }
 }
