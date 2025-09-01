@@ -23,12 +23,8 @@ public class Bill {
     // 退租时燃气表读数
     private BigDecimal gasReadingOut;
 
-    // 预付款金额
-    private BigDecimal prepaidAmount;
-    // 付费模式 (prepaid or postpaid)
-    private String paymentMode;
-
-    // 构造函数、getter和setter方法
-    public Bill() {}
-
+    // 用户充值金额
+    private BigDecimal waterRecharge;
+    private BigDecimal electricityRecharge;
+    private BigDecimal gasRecharge;
 }
