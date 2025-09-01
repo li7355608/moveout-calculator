@@ -11,6 +11,12 @@ import java.time.LocalDateTime;
  */
 public class BillingService {
 
+    private static final String WATER_CALCULATOR = "3.50";
+
+    private static final String ELECTRICITY_CALCULATOR = "1.20";
+
+    private static final String GAS_CALCULATOR = "2.80";
+
     /**
      * 运行费用计算流程
      */
@@ -21,11 +27,11 @@ public class BillingService {
         // 创建计算器并计算费用
         MoveOutCalculator calculator = new MoveOutCalculator(
                 // 水费单价
-            new BigDecimal("3.50"),
+            new BigDecimal(WATER_CALCULATOR),
                 // 电费单价
-            new BigDecimal("1.20"),
+            new BigDecimal(ELECTRICITY_CALCULATOR),
                 // 燃气费单价
-            new BigDecimal("2.80")
+            new BigDecimal(GAS_CALCULATOR)
         );
 
         // 执行计算
