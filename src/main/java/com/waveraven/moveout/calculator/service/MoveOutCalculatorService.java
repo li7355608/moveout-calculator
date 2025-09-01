@@ -48,7 +48,7 @@ public class MoveOutCalculatorService {
         BigDecimal gasAmountConsumed = gasTheoreticalBalance
                 .subtract(bill.getGasReadingOut());
 
-        // 计算实际使用量（消耗金额 / 单价）
+        // 计算实际使用量（消耗金额的绝对值 / 单价）
         // 使用量始终为正数
         BigDecimal waterUsage = waterAmountConsumed.abs().divide(waterRate, 2, RoundingMode.HALF_UP);
         BigDecimal electricityUsage = electricityAmountConsumed.abs().divide(electricityRate, 2, RoundingMode.HALF_UP);

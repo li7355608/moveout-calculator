@@ -145,18 +145,24 @@ public class BillingService {
         BigDecimal gasTheoretical = bill.getGasReadingIn().add(bill.getGasRecharge());
 
         System.out.println("\n理论余额（入住余额+充值）：");
-        System.out.printf("  水费理论余额: %s 元\n", waterTheoretical);
-        System.out.printf("  电费理论余额: %s 元\n", electricityTheoretical);
-        System.out.printf("  燃气费理论余额: %s 元\n", gasTheoretical);
+        System.out.printf("  水费理论余额: %s 元 (%s)\n", waterTheoretical,
+                waterTheoretical.compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
+        System.out.printf("  电费理论余额: %s 元 (%s)\n", electricityTheoretical,
+                electricityTheoretical.compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
+        System.out.printf("  燃气费理论余额: %s 元 (%s)\n", gasTheoretical,
+                gasTheoretical.compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
 
         System.out.println("\n实际消耗明细：");
         BigDecimal waterConsumed = waterTheoretical.subtract(bill.getWaterReadingOut());
         BigDecimal electricityConsumed = electricityTheoretical.subtract(bill.getElectricityReadingOut());
         BigDecimal gasConsumed = gasTheoretical.subtract(bill.getGasReadingOut());
 
-        System.out.printf("  水实际消耗: %s 元\n", waterConsumed);
-        System.out.printf("  电实际消耗: %s 元\n", electricityConsumed);
-        System.out.printf("  燃气实际消耗: %s 元\n", gasConsumed);
+        System.out.printf("  水实际消耗: %s 元 (%s)\n", waterConsumed.abs(),
+                waterConsumed.compareTo(BigDecimal.ZERO) >= 0 ? "需要支付" : "有余额");
+        System.out.printf("  电实际消耗: %s 元 (%s)\n", electricityConsumed.abs(),
+                electricityConsumed.compareTo(BigDecimal.ZERO) >= 0 ? "需要支付" : "有余额");
+        System.out.printf("  燃气实际消耗: %s 元 (%s)\n", gasConsumed.abs(),
+                gasConsumed.compareTo(BigDecimal.ZERO) >= 0 ? "需要支付" : "有余额");
 
         System.out.println("\n实际使用量明细：");
         System.out.printf("  水使用量: %s 吨/立方米\n", result.getWaterConsumption());
