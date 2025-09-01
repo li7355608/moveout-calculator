@@ -20,9 +20,12 @@ public class BillingService {
 
         // 创建计算器并计算费用
         MoveOutCalculator calculator = new MoveOutCalculator(
-            new BigDecimal("3.50"),   // 水费单价
-            new BigDecimal("1.20"),   // 电费单价
-            new BigDecimal("2.80")    // 燃气费单价
+                // 水费单价
+            new BigDecimal("3.50"),
+                // 电费单价
+            new BigDecimal("1.20"),
+                // 燃气费单价
+            new BigDecimal("2.80")
         );
 
         // 执行计算
@@ -40,15 +43,25 @@ public class BillingService {
 
         // 设置入住信息
         bill.setCheckInDate(LocalDateTime.of(2023, 1, 1, 14, 0));
-        bill.setWaterReadingIn(new BigDecimal("-25.50"));     // 入住时欠水费25.50元
-        bill.setElectricityReadingIn(new BigDecimal("50.00")); // 入住时水电余额50元
-        bill.setGasReadingIn(new BigDecimal("-10.00"));       // 入住时欠燃气费10元
+        // 入住时欠水费25.50元
+        bill.setWaterReadingIn(new BigDecimal("-25.50"));
+        // 入住时水电余额50元
+        bill.setElectricityReadingIn(new BigDecimal("50.00"));
+        // 入住时欠燃气费10元
+        bill.setGasReadingIn(new BigDecimal("-10.00"));
 
         // 设置退租信息
         bill.setCheckOutDate(LocalDateTime.of(2023, 12, 31, 10, 0));
-        bill.setWaterReadingOut(new BigDecimal("150.00"));    // 退租时水表读数
-        bill.setElectricityReadingOut(new BigDecimal("80.00")); // 退租时电表读数
-        bill.setGasReadingOut(new BigDecimal("200.00"));      // 退租时燃气表读数
+        // 退租时水表读数
+        bill.setWaterReadingOut(new BigDecimal("150.00"));
+        // 退租时电表读数
+        bill.setElectricityReadingOut(new BigDecimal("80.00"));
+        // 退租时燃气表读数
+        bill.setGasReadingOut(new BigDecimal("200.00"));
+
+        // 设置付费模式
+        // 默认后付费模式
+        bill.setPaymentMode("postpaid");
 
         return bill;
     }
@@ -72,6 +85,11 @@ public class BillingService {
         System.out.printf("  水表: %s 元\n", bill.getWaterReadingOut());
         System.out.printf("  电表: %s 元\n", bill.getElectricityReadingOut());
         System.out.printf("  燃气表: %s 元\n", bill.getGasReadingOut());
+
+        System.out.println("\n使用量明细：");
+        System.out.printf("  水使用量: %s\n", result.getWaterConsumption());
+        System.out.printf("  电使用量: %s\n", result.getElectricityConsumption());
+        System.out.printf("  燃气使用量: %s\n", result.getGasConsumption());
 
         System.out.println("\n费用明细：");
         System.out.printf("  水费消耗: %s 元，费用: %s 元\n",
