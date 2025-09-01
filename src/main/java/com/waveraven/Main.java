@@ -1,6 +1,6 @@
 package com.waveraven;
 
-import com.waveraven.moveout.calculator.BillingService;
+import com.waveraven.moveout.calculator.service.BillingService;
 
 public class Main {
     public static void main(String[] args) {

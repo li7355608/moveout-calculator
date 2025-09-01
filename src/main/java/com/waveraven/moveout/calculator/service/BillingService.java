@@ -1,4 +1,4 @@
-package com.waveraven.moveout.calculator;
+package com.waveraven.moveout.calculator.service;
 
 import com.waveraven.moveout.calculator.entity.Bill;
 import com.waveraven.moveout.calculator.entity.CalculationResult;
@@ -26,7 +26,7 @@ public class BillingService {
         Bill bill = createSampleBill();
 
         // 创建计算器并计算费用
-        MoveOutCalculator calculator = new MoveOutCalculator(
+        MoveOutCalculatorService calculator = new MoveOutCalculatorService(
                 // 水费单价
             new BigDecimal(WATER_CALCULATOR),
                 // 电费单价

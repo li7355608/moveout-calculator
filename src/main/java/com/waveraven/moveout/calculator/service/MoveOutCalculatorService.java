@@ -1,4 +1,4 @@
-package com.waveraven.moveout.calculator;
+package com.waveraven.moveout.calculator.service;
 
 import com.waveraven.moveout.calculator.entity.Bill;
 import com.waveraven.moveout.calculator.entity.CalculationResult;
@@ -9,12 +9,12 @@ import java.math.RoundingMode;
 /**
  * 退租费用计算器
  */
-public class MoveOutCalculator {
+public class MoveOutCalculatorService {
     private final BigDecimal waterRate;       // 水费单价
     private final BigDecimal electricityRate; // 电费单价
     private final BigDecimal gasRate;         // 燃气费单价
 
-    public MoveOutCalculator(BigDecimal waterRate, BigDecimal electricityRate, BigDecimal gasRate) {
+    public MoveOutCalculatorService(BigDecimal waterRate, BigDecimal electricityRate, BigDecimal gasRate) {
         this.waterRate = waterRate;
         this.electricityRate = electricityRate;
         this.gasRate = gasRate;
