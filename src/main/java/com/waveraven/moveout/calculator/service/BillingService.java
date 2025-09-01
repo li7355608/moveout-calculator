@@ -71,6 +71,15 @@ public class BillingService {
         System.out.print("请输入入住时燃气表金额(正数表示余额，负数表示欠费): ");
         bill.setGasReadingIn(new BigDecimal(scanner.next()));
 
+        // 输入充值信息
+        System.out.println("\n充值信息：");
+        System.out.print("请输入水费充值金额: ");
+        bill.setWaterRecharge(new BigDecimal(scanner.next()));
+        System.out.print("请输入电费充值金额: ");
+        bill.setElectricityRecharge(new BigDecimal(scanner.next()));
+        System.out.print("请输入燃气费充值金额: ");
+        bill.setGasRecharge(new BigDecimal(scanner.next()));
+
         // 输入退租信息
         System.out.println("\n退租信息：");
         System.out.print("请输入退租年份: ");
@@ -115,11 +124,12 @@ public class BillingService {
         System.out.printf("  燃气费: %s 元 (%s)\n", bill.getGasReadingIn(),
                 bill.getGasReadingIn().compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
 
-        BigDecimal totalIn = bill.getWaterReadingIn()
-                .add(bill.getElectricityReadingIn())
-                .add(bill.getGasReadingIn());
-        System.out.printf("  总计: %s 元 (%s)\n", totalIn,
-                totalIn.compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
+        System.out.println("\n充值金额：");
+        System.out.printf("  水费充值: %s 元\n", bill.getWaterRecharge());
+        System.out.printf("  电费充值: %s 元\n", bill.getElectricityRecharge());
+        System.out.printf("  燃气费充值: %s 元\n", bill.getGasRecharge());
+        System.out.printf("  充值总计: %s 元\n",
+                bill.getWaterRecharge().add(bill.getElectricityRecharge()).add(bill.getGasRecharge()));
 
         System.out.println("\n退租时状态：");
         System.out.printf("  水表: %s 元 (%s)\n", bill.getWaterReadingOut(),
@@ -129,37 +139,48 @@ public class BillingService {
         System.out.printf("  燃气表: %s 元 (%s)\n", bill.getGasReadingOut(),
                 bill.getGasReadingOut().compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
 
-        BigDecimal totalOut = bill.getWaterReadingOut()
-                .add(bill.getElectricityReadingOut())
-                .add(bill.getGasReadingOut());
-        System.out.printf("  总计: %s 元 (%s)\n", totalOut,
-                totalOut.compareTo(BigDecimal.ZERO) >= 0 ? "余额" : "欠费");
+        // 计算理论余额
+        BigDecimal waterTheoretical = bill.getWaterReadingIn().add(bill.getWaterRecharge());
+        BigDecimal electricityTheoretical = bill.getElectricityReadingIn().add(bill.getElectricityRecharge());
+        BigDecimal gasTheoretical = bill.getGasReadingIn().add(bill.getGasRecharge());
 
-        System.out.println("\n账户变动明细：");
-        System.out.printf("  水费变动: %s 元 (%s)\n", result.getWaterConsumption(),
-                result.getWaterConsumption().compareTo(BigDecimal.ZERO) >= 0 ? "充值/余额增加" : "消费/余额减少");
-        System.out.printf("  电费变动: %s 元 (%s)\n", result.getElectricityConsumption(),
-                result.getElectricityConsumption().compareTo(BigDecimal.ZERO) >= 0 ? "充值/余额增加" : "消费/余额减少");
-        System.out.printf("  燃气费变动: %s 元 (%s)\n", result.getGasConsumption(),
-                result.getGasConsumption().compareTo(BigDecimal.ZERO) >= 0 ? "充值/余额增加" : "消费/余额减少");
+        System.out.println("\n理论余额（入住余额+充值）：");
+        System.out.printf("  水费理论余额: %s 元\n", waterTheoretical);
+        System.out.printf("  电费理论余额: %s 元\n", electricityTheoretical);
+        System.out.printf("  燃气费理论余额: %s 元\n", gasTheoretical);
+
+        System.out.println("\n实际消耗明细：");
+        BigDecimal waterConsumed = waterTheoretical.subtract(bill.getWaterReadingOut());
+        BigDecimal electricityConsumed = electricityTheoretical.subtract(bill.getElectricityReadingOut());
+        BigDecimal gasConsumed = gasTheoretical.subtract(bill.getGasReadingOut());
+
+        System.out.printf("  水实际消耗: %s 元\n", waterConsumed);
+        System.out.printf("  电实际消耗: %s 元\n", electricityConsumed);
+        System.out.printf("  燃气实际消耗: %s 元\n", gasConsumed);
+
+        System.out.println("\n实际使用量明细：");
+        System.out.printf("  水使用量: %s 吨/立方米\n", result.getWaterConsumption());
+        System.out.printf("  电使用量: %s 度\n", result.getElectricityConsumption());
+        System.out.printf("  燃气使用量: %s 立方米\n", result.getGasConsumption());
 
         System.out.println("\n费用明细：");
         System.out.printf("  水费: %s 元\n", result.getWaterCost());
         System.out.printf("  电费: %s 元\n", result.getElectricityCost());
         System.out.printf("  燃气费: %s 元\n", result.getGasCost());
         System.out.println("------------------------");
-        System.out.printf("总计变动金额: %s 元\n", result.getTotalCost());
+        System.out.printf("总计应付费用: %s 元\n", result.getTotalCost());
+        System.out.printf("总充值金额: %s 元\n", result.getPrepaidAmount());
 
         // 显示退款信息
-        // 退款金额 = 入住时总余额 - 退租时总余额
-        // 正数表示入住时余额多，退租时余额少，用户消费了，需要补缴给房东
-        // 负数表示入住时余额少，退租时余额多，用户充值了，需要房东退款给用户
+        // 退款金额 = 充值金额 - 实际消费金额
+        // 正数表示充值多了，需要退款给用户
+        // 负数表示充值少了，用户还需要补缴
         if (result.getRefundAmount().compareTo(BigDecimal.ZERO) > 0) {
-            System.out.printf("用户需补缴给房东: %s 元\n", result.getRefundAmount());
+            System.out.printf("应退款给用户: %s 元\n", result.getRefundAmount());
         } else if (result.getRefundAmount().compareTo(BigDecimal.ZERO) < 0) {
-            System.out.printf("房东需退款给用户: %s 元\n", result.getRefundAmount().abs());
+            System.out.printf("用户还需补缴: %s 元\n", result.getRefundAmount().abs());
         } else {
-            System.out.println("账户余额无变动，无需退款或补缴");
+            System.out.println("充值金额与实际费用一致，无需退款或补缴");
         }
     }
 }

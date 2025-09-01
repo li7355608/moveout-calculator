@@ -27,18 +27,34 @@ public class MoveOutCalculatorService {
      * @return 计算结果
      */
     public CalculationResult calculate(Bill bill) {
-        // 计算消耗金额（退租读数 - 入住读数）
-        // 正数表示充值/余额增加，负数表示消耗/余额减少
-        BigDecimal waterAmountConsumed = bill.getWaterReadingOut()
-                .subtract(bill.getWaterReadingIn());
+        // 计算理论余额（入住余额 + 充值金额）
+        BigDecimal waterTheoreticalBalance = bill.getWaterReadingIn()
+                .add(bill.getWaterRecharge());
 
-        BigDecimal electricityAmountConsumed = bill.getElectricityReadingOut()
-                .subtract(bill.getElectricityReadingIn());
+        BigDecimal electricityTheoreticalBalance = bill.getElectricityReadingIn()
+                .add(bill.getElectricityRecharge());
 
-        BigDecimal gasAmountConsumed = bill.getGasReadingOut()
-                .subtract(bill.getGasReadingIn());
+        BigDecimal gasTheoreticalBalance = bill.getGasReadingIn()
+                .add(bill.getGasRecharge());
 
-        // 计算各项费用（消耗金额的绝对值，保留2位小数）
+        // 计算实际消耗金额（理论余额 - 退租读数）
+        // 这才是真正消耗掉的金额
+        BigDecimal waterAmountConsumed = waterTheoreticalBalance
+                .subtract(bill.getWaterReadingOut());
+
+        BigDecimal electricityAmountConsumed = electricityTheoreticalBalance
+                .subtract(bill.getElectricityReadingOut());
+
+        BigDecimal gasAmountConsumed = gasTheoreticalBalance
+                .subtract(bill.getGasReadingOut());
+
+        // 计算实际使用量（消耗金额 / 单价）
+        // 使用量始终为正数
+        BigDecimal waterUsage = waterAmountConsumed.abs().divide(waterRate, 2, RoundingMode.HALF_UP);
+        BigDecimal electricityUsage = electricityAmountConsumed.abs().divide(electricityRate, 2, RoundingMode.HALF_UP);
+        BigDecimal gasUsage = gasAmountConsumed.abs().divide(gasRate, 2, RoundingMode.HALF_UP);
+
+        // 计算各项费用（消耗金额的绝对值）
         BigDecimal waterCost = waterAmountConsumed.abs().setScale(2, RoundingMode.HALF_UP);
         BigDecimal electricityCost = electricityAmountConsumed.abs().setScale(2, RoundingMode.HALF_UP);
         BigDecimal gasCost = gasAmountConsumed.abs().setScale(2, RoundingMode.HALF_UP);
@@ -47,22 +63,15 @@ public class MoveOutCalculatorService {
         BigDecimal totalCost = waterCost.add(electricityCost).add(gasCost)
                 .setScale(2, RoundingMode.HALF_UP);
 
-        // 计算退款金额（正数表示退给用户，负数表示用户需要支付）
-        // 退款金额 = 入住时总余额 - 退租时总余额
-        // 如果入住时余额多，退租时余额少，说明消费了，用户需要补缴（负数）
-        // 如果入住时余额少，退租时余额多，说明充值了，需要退款给用户（正数）
-        BigDecimal totalIn = bill.getWaterReadingIn()
-                .add(bill.getElectricityReadingIn())
-                .add(bill.getGasReadingIn());
+        // 计算退款金额（总充值金额 - 总消费金额）
+        BigDecimal totalRecharge = bill.getWaterRecharge()
+                .add(bill.getElectricityRecharge())
+                .add(bill.getGasRecharge());
 
-        BigDecimal totalOut = bill.getWaterReadingOut()
-                .add(bill.getElectricityReadingOut())
-                .add(bill.getGasReadingOut());
+        BigDecimal refundAmount = totalRecharge.subtract(totalCost);
 
-        BigDecimal refundAmount = totalIn.subtract(totalOut);
-
-        return new CalculationResult(waterAmountConsumed, electricityAmountConsumed, gasAmountConsumed,
-                waterCost, electricityCost, gasCost, totalCost, BigDecimal.ZERO,
+        return new CalculationResult(waterUsage, electricityUsage, gasUsage,
+                waterCost, electricityCost, gasCost, totalCost, totalRecharge,
                 refundAmount, "simple");
     }
 }
