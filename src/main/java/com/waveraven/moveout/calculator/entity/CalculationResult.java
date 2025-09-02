@@ -32,21 +32,4 @@ public class CalculationResult {
     private final BigDecimal refundAmount;
     // 付费模式
     private final String paymentMode;
-
-    public CalculationResult(BigDecimal waterConsumption, BigDecimal electricityConsumption,
-                             BigDecimal gasConsumption, BigDecimal waterCost,
-                             BigDecimal electricityCost, BigDecimal gasCost,
-                             BigDecimal totalCost, BigDecimal prepaidAmount,
-                             BigDecimal refundAmount, String paymentMode) {
-        this.waterConsumption = waterConsumption;
-        this.electricityConsumption = electricityConsumption;
-        this.gasConsumption = gasConsumption;
-        this.waterCost = waterCost;
-        this.electricityCost = electricityCost;
-        this.gasCost = gasCost;
-        this.totalCost = totalCost;
-        this.prepaidAmount = prepaidAmount;
-        this.refundAmount = refundAmount;
-        this.paymentMode = paymentMode;
-    }
 }
