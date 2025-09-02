@@ -52,7 +52,8 @@ public class BillingService {
         Bill bill = new Bill();
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println(ConsoleColors.CYAN_BOLD + "=== 请输入账单信息 ===" + ConsoleColors.RESET);
+        System.out.println(ConsoleColors.CYAN_BOLD + "=== 退租计算账单信息 ===" + ConsoleColors.RESET);
+        System.out.println(ConsoleColors.PURPLE + "------------------------" + ConsoleColors.RESET);
 
         // 输入入住信息
         System.out.println(ConsoleColors.YELLOW + "住户入住信息：" + ConsoleColors.RESET);
@@ -101,6 +102,7 @@ public class BillingService {
         System.out.print("请输入退租时燃气表金额(正数表示余额，负数表示欠费): ");
         bill.setGasReadingOut(new BigDecimal(scanner.next()));
 
+        System.out.println(ConsoleColors.PURPLE + "------------------------" + ConsoleColors.RESET);
         return bill;
     }
 
@@ -111,7 +113,7 @@ public class BillingService {
         // 创建日期时间格式化器（只显示年月日）
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
 
-        System.out.println("\n" + ConsoleColors.GREEN_BOLD + "=== 水电煤退租费用结算单 ===" + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.GREEN_BOLD + "=== 退租费用结算单 ===" + ConsoleColors.RESET);
         System.out.printf(ConsoleColors.CYAN + "入住时间: " + ConsoleColors.RESET + "%s\n", bill.getCheckInDate().format(formatter));
         System.out.printf(ConsoleColors.CYAN + "退租时间: " + ConsoleColors.RESET + "%s\n", bill.getCheckOutDate().format(formatter));
         System.out.printf(ConsoleColors.CYAN + "居住天数: " + ConsoleColors.RESET + "%d 天\n",
@@ -239,18 +241,23 @@ public class BillingService {
         System.out.printf("  燃气费: %s 元\n", ConsoleColors.RED_BOLD + result.getGasCost().toString() + ConsoleColors.RESET);
         System.out.println(ConsoleColors.PURPLE + "------------------------" + ConsoleColors.RESET);
         System.out.printf(ConsoleColors.GREEN_BOLD + "总计应付费用: %s 元\n" + ConsoleColors.RESET, result.getTotalCost());
-        System.out.printf(ConsoleColors.BLUE + "总充值金额: %s 元\n" + ConsoleColors.RESET, result.getPrepaidAmount());
+        System.out.printf(ConsoleColors.BLUE + "住户充值金额: %s 元\n" + ConsoleColors.RESET, result.getPrepaidAmount());
 
         // 显示退款信息
         // 退款金额 = 充值金额 - 实际消费金额
         // 正数表示充值多了，需要退款给用户
         // 负数表示充值少了，用户还需要补缴
         if (result.getRefundAmount().compareTo(BigDecimal.ZERO) > 0) {
-            System.out.printf(ConsoleColors.GREEN_BOLD + "房东应退款给用户: %s 元\n" + ConsoleColors.RESET, result.getRefundAmount());
+            System.out.printf(ConsoleColors.GREEN_BOLD + "房东应退款住户: %s 元\n" + ConsoleColors.RESET, result.getRefundAmount());
         } else if (result.getRefundAmount().compareTo(BigDecimal.ZERO) < 0) {
-            System.out.printf(ConsoleColors.RED_BOLD + "住户还需补缴房东: %s 元\n" + ConsoleColors.RESET, result.getRefundAmount().abs());
+            System.out.printf(ConsoleColors.RED_BOLD + "住户需补缴房东: %s 元\n" + ConsoleColors.RESET, result.getRefundAmount().abs());
         } else {
             System.out.println(ConsoleColors.YELLOW + "充值金额与实际费用一致，住户或房东均无需退款或补缴" + ConsoleColors.RESET);
         }
+
+        // 获取当前日期作为账单生成日期
+        String billGenerationDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm:ss"));
+
+        System.out.printf(ConsoleColors.CYAN + "账单生成时间: " + ConsoleColors.RESET + "%s\n", billGenerationDate);
     }
 }
