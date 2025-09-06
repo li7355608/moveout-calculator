@@ -50,59 +50,59 @@ public class BillingService {
      */
     private Bill createBillFromInput() {
         Bill bill = new Bill();
-        Scanner scanner = new Scanner(System.in);
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.println(ConsoleColors.CYAN_BOLD + "=== 退租计算账单信息 ===" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.PURPLE + "------------------------" + ConsoleColors.RESET);
 
-        System.out.println(ConsoleColors.CYAN_BOLD + "=== 退租计算账单信息 ===" + ConsoleColors.RESET);
-        System.out.println(ConsoleColors.PURPLE + "------------------------" + ConsoleColors.RESET);
+            // 输入入住信息
+            System.out.println(ConsoleColors.YELLOW + "住户入住信息：" + ConsoleColors.RESET);
+            System.out.print("请输入入住年份: ");
+            int checkInYear = scanner.nextInt();
+            System.out.print("请输入入住月份: ");
+            int checkInMonth = scanner.nextInt();
+            System.out.print("请输入入住日期: ");
+            int checkInDay = scanner.nextInt();
 
-        // 输入入住信息
-        System.out.println(ConsoleColors.YELLOW + "住户入住信息：" + ConsoleColors.RESET);
-        System.out.print("请输入入住年份: ");
-        int checkInYear = scanner.nextInt();
-        System.out.print("请输入入住月份: ");
-        int checkInMonth = scanner.nextInt();
-        System.out.print("请输入入住日期: ");
-        int checkInDay = scanner.nextInt();
+            // 设置默认时间为当天0点0分
+            bill.setCheckInDate(LocalDateTime.of(checkInYear, checkInMonth, checkInDay, 0, 0));
 
-        // 设置默认时间为当天0点0分
-        bill.setCheckInDate(LocalDateTime.of(checkInYear, checkInMonth, checkInDay, 0, 0));
+            System.out.print("请输入入住时水表金额(正数表示余额，负数表示欠费): ");
+            bill.setWaterReadingIn(new BigDecimal(scanner.next()));
+            System.out.print("请输入入住时电表金额(正数表示余额，负数表示欠费): ");
+            bill.setElectricityReadingIn(new BigDecimal(scanner.next()));
+            System.out.print("请输入入住时燃气表金额(正数表示余额，负数表示欠费): ");
+            bill.setGasReadingIn(new BigDecimal(scanner.next()));
 
-        System.out.print("请输入入住时水表金额(正数表示余额，负数表示欠费): ");
-        bill.setWaterReadingIn(new BigDecimal(scanner.next()));
-        System.out.print("请输入入住时电表金额(正数表示余额，负数表示欠费): ");
-        bill.setElectricityReadingIn(new BigDecimal(scanner.next()));
-        System.out.print("请输入入住时燃气表金额(正数表示余额，负数表示欠费): ");
-        bill.setGasReadingIn(new BigDecimal(scanner.next()));
+            // 输入充值信息
+            System.out.println("\n" + ConsoleColors.YELLOW + "住户总充值信息：" + ConsoleColors.RESET);
+            System.out.print("请输入水费充值金额: ");
+            bill.setWaterRecharge(new BigDecimal(scanner.next()));
+            System.out.print("请输入电费充值金额: ");
+            bill.setElectricityRecharge(new BigDecimal(scanner.next()));
+            System.out.print("请输入燃气费充值金额: ");
+            bill.setGasRecharge(new BigDecimal(scanner.next()));
 
-        // 输入充值信息
-        System.out.println("\n" + ConsoleColors.YELLOW + "住户总充值信息：" + ConsoleColors.RESET);
-        System.out.print("请输入水费充值金额: ");
-        bill.setWaterRecharge(new BigDecimal(scanner.next()));
-        System.out.print("请输入电费充值金额: ");
-        bill.setElectricityRecharge(new BigDecimal(scanner.next()));
-        System.out.print("请输入燃气费充值金额: ");
-        bill.setGasRecharge(new BigDecimal(scanner.next()));
+            // 输入退租信息
+            System.out.println("\n" + ConsoleColors.YELLOW + "住户退租信息：" + ConsoleColors.RESET);
+            System.out.print("请输入退租年份: ");
+            int checkOutYear = scanner.nextInt();
+            System.out.print("请输入退租月份: ");
+            int checkOutMonth = scanner.nextInt();
+            System.out.print("请输入退租日期: ");
+            int checkOutDay = scanner.nextInt();
 
-        // 输入退租信息
-        System.out.println("\n" + ConsoleColors.YELLOW + "住户退租信息：" + ConsoleColors.RESET);
-        System.out.print("请输入退租年份: ");
-        int checkOutYear = scanner.nextInt();
-        System.out.print("请输入退租月份: ");
-        int checkOutMonth = scanner.nextInt();
-        System.out.print("请输入退租日期: ");
-        int checkOutDay = scanner.nextInt();
+            // 设置默认时间为当天0点0分
+            bill.setCheckOutDate(LocalDateTime.of(checkOutYear, checkOutMonth, checkOutDay, 0, 0));
 
-        // 设置默认时间为当天0点0分
-        bill.setCheckOutDate(LocalDateTime.of(checkOutYear, checkOutMonth, checkOutDay, 0, 0));
+            System.out.print("请输入退租时水表金额(正数表示余额，负数表示欠费): ");
+            bill.setWaterReadingOut(new BigDecimal(scanner.next()));
+            System.out.print("请输入退租时电表金额(正数表示余额，负数表示欠费): ");
+            bill.setElectricityReadingOut(new BigDecimal(scanner.next()));
+            System.out.print("请输入退租时燃气表金额(正数表示余额，负数表示欠费): ");
+            bill.setGasReadingOut(new BigDecimal(scanner.next()));
 
-        System.out.print("请输入退租时水表金额(正数表示余额，负数表示欠费): ");
-        bill.setWaterReadingOut(new BigDecimal(scanner.next()));
-        System.out.print("请输入退租时电表金额(正数表示余额，负数表示欠费): ");
-        bill.setElectricityReadingOut(new BigDecimal(scanner.next()));
-        System.out.print("请输入退租时燃气表金额(正数表示余额，负数表示欠费): ");
-        bill.setGasReadingOut(new BigDecimal(scanner.next()));
-
-        System.out.println(ConsoleColors.PURPLE + "------------------------" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.PURPLE + "------------------------" + ConsoleColors.RESET);
+        }
         return bill;
     }
 
